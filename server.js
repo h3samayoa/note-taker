@@ -6,7 +6,7 @@ const { json } = require('express');
 
 var app = express();
 
-var port = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 
@@ -37,21 +37,20 @@ app.route('/api/notes')
             let note = db[i];
 
             if(note.id > maxId) {
-
+                maxId = note.id;
             }
         }
 
-        note.id = maxId + 1;
+        postNote.id = maxId + 1;
 
         db.push(postNote);
 
         fs.writeFile(jsonFile, JSON.stringify(db), function(err) {
             if (err) {
                 return err;
-            } else {
-                console.log("Note saved!");
-            }
-        })
+            } 
+            console.log("Note saved!");
+        });
 
         res.json(postNote);
     });
