@@ -1,7 +1,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const db = require('./db/db.json')
+const db = require('./db/db.json');
+const { json } = require('express');
 
 var app = express();
 
@@ -46,10 +47,34 @@ app.route('/api/notes')
 
         fs.writeFile(jsonFile, JSON.stringify(db), function(err) {
             if (err) {
-                return console.log(err);
+                return err;
+            } else {
+                console.log("Note saved!");
             }
-            console.log("Note saved!");
         })
 
         res.json(postNote);
-    })
+    });
+
+app.delete('/api/notes/:id', function(req, res) {
+    let jsonFile = path.join(__dirname, '/db/db.json');
+    for(let i = 0; i < db.length; i++) {
+        if(db[i].id == req.params.id) {
+            db.splice(i, 1)
+            break
+        }
+    }
+
+    fs.writeFileSync(jsonFile, JSON.stringify(db), function(err) {
+        if(err) {
+            return err;
+        } else {
+            console.log('Note deleted!')
+        }
+    });
+    res.json(db);
+})
+
+app.listen(PORT, function() {
+    console.log("running on localhost:" + PORT)
+})
